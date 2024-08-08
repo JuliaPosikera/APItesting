@@ -85,17 +85,11 @@ export class PetController {
     }
   }
   static async deletePet(id: number) {
-    try {
-      return (
-        await new JsonRequest()
-          .url(`http://localhost:8080/api/v3/pet/${id}`)
-          .method("DELETE")
-          .send()
-      ).body;
-    } catch (error: any) {
-      console.error(
-        error?.response?.body || `Error by deleting pet with id=${id}`
-      );
-    }
+    return (
+      await new JsonRequest()
+        .url(`http://localhost:8080/api/v3/pet/${id}`)
+        .method("DELETE")
+        .send()
+    ).body;
   }
 }

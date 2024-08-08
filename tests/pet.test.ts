@@ -88,6 +88,6 @@ describe("User can ", () => {
       "The returned pet object does not match the sent pet object"
     );
 
-    responce = await pet.deletePet(199);
+    pet.deletePet(199);
   });
 });
