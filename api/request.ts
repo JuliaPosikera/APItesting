@@ -21,7 +21,7 @@ export class JsonRequest {
     this.options.json = body;
     return this;
   }
-  public send() {
-    return got<any>(this.options);
+  public send<T>() {
+    return got<T>(this.options);
   }
 }

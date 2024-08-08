@@ -1,12 +1,5 @@
 import { JsonRequest } from "./../request";
-interface Pet {
-  id?: number;
-  category: { id: number; name: string };
-  name: string;
-  photoUrls: string[];
-  tags: Array<{ id: number; name: string }>;
-  status: string;
-}
+import { components, operations } from "./../../temp/schema";
 
 export class PetController {
   static async getById(id: number | string) {
@@ -14,10 +7,12 @@ export class PetController {
       return (
         await new JsonRequest()
           .url(`http://localhost:8080/api/v3/pet/${id}`)
-          .send()
+          .send<
+            operations["getPetById"]["responses"]["200"]["content"]["application/json"]
+          >()
       ).body;
     } catch (error: any) {
-      console.error(error?.response?.body || "error by getting pets by id");
+      console.error(error?.message || "error by getting pets by id");
     }
   }
 
@@ -36,60 +31,64 @@ export class PetController {
         await new JsonRequest()
           .url(`http://localhost:8080/api/v3/pet/findByTags`)
           .searchParams(searchParams)
-          .send()
+          .send<
+            operations["findPetsByTags"]["responses"]["200"]["content"]["application/json"]
+          >()
       ).body;
     } catch (error: any) {
-      console.error(error?.response?.body || "error by getting pets by tags");
+      console.error(error?.message || "error by getting pets by tags");
     }
   }
 
-  static async getByIdStatus(status: "available" | "sold" | "pending") {
+  static async getByStatus(status: components["schemas"]["Pet"]["status"]) {
     try {
       return (
         await new JsonRequest()
           .url(`http://localhost:8080/api/v3/pet/findByStatus?status=${status}`)
-          .send()
+          .send<
+            operations["findPetsByStatus"]["responses"]["200"]["content"]["application/json"]
+          >()
       ).body;
     } catch (error: any) {
-      console.error(error?.response?.body || "error by getting pets by status");
+      console.error(error?.message || "error by getting pets by status");
     }
   }
 
-  static async addNew(pet: Pet) {
+  static async addNewPet(pet: components["schemas"]["Pet"]) {
     try {
       return (
         await new JsonRequest()
           .url("http://localhost:8080/api/v3/pet")
           .method("POST")
           .body(pet)
-          .send()
+          .send<
+            operations["addPet"]["responses"]["200"]["content"]["application/json"]
+          >()
       ).body;
     } catch (error: any) {
-      console.error(error?.response?.body || "Error by adding new pet");
+      console.error(error?.message || "Error by adding new pet");
     }
   }
 
-  static async updatePet(pet: Pet) {
+  static async updatePet(pet: components["schemas"]["Pet"]) {
     try {
       return (
         await new JsonRequest()
           .url("http://localhost:8080/api/v3/pet")
           .method("PUT")
           .body(pet)
-          .send()
+          .send<
+            operations["updatePet"]["responses"]["200"]["content"]["application/json"]
+          >()
       ).body;
     } catch (error: any) {
-      console.error(
-        error?.response?.body || "Error by updating pet with id=10"
-      );
+      console.error(error?.message || "Error by updating pet with id=10");
     }
   }
   static async deletePet(id: number) {
-    return (
-      await new JsonRequest()
-        .url(`http://localhost:8080/api/v3/pet/${id}`)
-        .method("DELETE")
-        .send()
-    ).body;
+    return await new JsonRequest()
+      .url(`http://localhost:8080/api/v3/pet/${id}`)
+      .method("DELETE")
+      .send();
   }
 }
