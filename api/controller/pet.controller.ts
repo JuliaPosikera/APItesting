@@ -1,19 +1,24 @@
-import got from "got";
-
+import { JsonRequest } from "./../request";
 interface Pet {
-  id: number;
+  id?: number;
   category: { id: number; name: string };
   name: string;
   photoUrls: string[];
-  tags: Array<{ [key: string]: any }>;
+  tags: Array<{ id: number; name: string }>;
   status: string;
 }
 
 export class PetController {
   static async getById(id: number | string) {
-    const responce = await got(`http://localhost:8080/api/v3/pet/${id}`);
-    const body: Pet = JSON.parse(responce.body);
-    return body;
+    try {
+      return (
+        await new JsonRequest()
+          .url(`http://localhost:8080/api/v3/pet/${id}`)
+          .send()
+      ).body;
+    } catch (error: any) {
+      console.error(error?.response?.body || "error by getting pets by id");
+    }
   }
 
   static async getByTags(tags: string | string[]) {
@@ -26,20 +31,71 @@ export class PetController {
         searchParams.append("tags", tag);
       });
     }
-
-    const responce = await got(`http://localhost:8080/api/v3/pet/findByTags`, {
-      searchParams: searchParams,
-    });
-    const body: Pet[] = JSON.parse(responce.body);
-    return body;
+    try {
+      return (
+        await new JsonRequest()
+          .url(`http://localhost:8080/api/v3/pet/findByTags`)
+          .searchParams(searchParams)
+          .send()
+      ).body;
+    } catch (error: any) {
+      console.error(error?.response?.body || "error by getting pets by tags");
+    }
   }
 
   static async getByIdStatus(status: "available" | "sold" | "pending") {
-    const responce = await got(
-      `http://localhost:8080/api/v3/pet/findByStatus?status=${status}`
-    );
-    const body: Pet[] = JSON.parse(responce.body);
+    try {
+      return (
+        await new JsonRequest()
+          .url(`http://localhost:8080/api/v3/pet/findByStatus?status=${status}`)
+          .send()
+      ).body;
+    } catch (error: any) {
+      console.error(error?.response?.body || "error by getting pets by status");
+    }
+  }
 
-    return body;
+  static async addNew(pet: Pet) {
+    try {
+      return (
+        await new JsonRequest()
+          .url("http://localhost:8080/api/v3/pet")
+          .method("POST")
+          .body(pet)
+          .send()
+      ).body;
+    } catch (error: any) {
+      console.error(error?.response?.body || "Error by adding new pet");
+    }
+  }
+
+  static async updatePet(pet: Pet) {
+    try {
+      return (
+        await new JsonRequest()
+          .url("http://localhost:8080/api/v3/pet")
+          .method("PUT")
+          .body(pet)
+          .send()
+      ).body;
+    } catch (error: any) {
+      console.error(
+        error?.response?.body || "Error by updating pet with id=10"
+      );
+    }
+  }
+  static async deletePet(id: number) {
+    try {
+      return (
+        await new JsonRequest()
+          .url(`http://localhost:8080/api/v3/pet/${id}`)
+          .method("DELETE")
+          .send()
+      ).body;
+    } catch (error: any) {
+      console.error(
+        error?.response?.body || `Error by deleting pet with id=${id}`
+      );
+    }
   }
 }
