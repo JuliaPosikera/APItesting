@@ -1,25 +1,26 @@
-import { JsonRequest } from "./../request";
+import { JsonRequestValidation } from "../request";
 import { components, operations } from "./../../temp/schema";
-import { loadAPISpeck, validate } from "../validator";
 
 export class PetController {
   static async getById(id: number | string) {
     try {
       const body = (
-        await new JsonRequest()
+        await new JsonRequestValidation()
           .url(`http://localhost:8080/api/v3/pet/${id}`)
           .send<
             operations["getPetById"]["responses"]["200"]["content"]["application/json"]
           >()
       ).body;
-      const apiSpeck = (await loadAPISpeck()) as any;
 
-      const schema =
-        apiSpeck.paths["/pet/{petId}"]["get"]["responses"]["200"]["content"][
-          "application/xml"
-        ];
+      // const apiSpeck = (await loadAPISpeck()) as any;
 
-      validate(schema, { id: "Wrong ID", status: 122, name: "kkkkk" });
+      // const schema =
+      //   apiSpeck.paths["/pet/{petId}"]["get"]["responses"]["200"]["content"][
+      //     "application/xml"
+      //   ]["schema"];
+
+      // // validate(schema, { id: "Wrong ID", status: 122 });
+      // validate(schema, body);
       return body;
     } catch (error: any) {
       console.error(error?.message || "error by getting pets by id");
@@ -38,7 +39,7 @@ export class PetController {
     }
     try {
       return (
-        await new JsonRequest()
+        await new JsonRequestValidation()
           .url(`http://localhost:8080/api/v3/pet/findByTags`)
           .searchParams(searchParams)
           .send<
@@ -53,7 +54,7 @@ export class PetController {
   static async getByStatus(status: components["schemas"]["Pet"]["status"]) {
     try {
       return (
-        await new JsonRequest()
+        await new JsonRequestValidation()
           .url(`http://localhost:8080/api/v3/pet/findByStatus?status=${status}`)
           .send<
             operations["findPetsByStatus"]["responses"]["200"]["content"]["application/json"]
@@ -67,7 +68,7 @@ export class PetController {
   static async addNewPet(pet: components["schemas"]["Pet"]) {
     try {
       return (
-        await new JsonRequest()
+        await new JsonRequestValidation()
           .url("http://localhost:8080/api/v3/pet")
           .method("POST")
           .body(pet)
@@ -83,7 +84,7 @@ export class PetController {
   static async updatePet(pet: components["schemas"]["Pet"]) {
     try {
       return (
-        await new JsonRequest()
+        await new JsonRequestValidation()
           .url("http://localhost:8080/api/v3/pet")
           .method("PUT")
           .body(pet)
@@ -96,7 +97,7 @@ export class PetController {
     }
   }
   static async deletePet(id: number) {
-    return await new JsonRequest()
+    return await new JsonRequestValidation()
       .url(`http://localhost:8080/api/v3/pet/${id}`)
       .method("DELETE")
       .send();

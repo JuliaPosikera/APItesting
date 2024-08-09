@@ -34,38 +34,36 @@ describe("Store", () => {
   async function testOrderStatus(
     status: components["schemas"]["Order"]["status"]
   ) {
-    try {
-      const orderToAdd = newOrderWithStatus(status);
+    const orderToAdd = newOrderWithStatus(status);
 
-      const addedOrder = await store.placeOrder(orderToAdd);
+    const addedOrder = await store.placeOrder(orderToAdd);
 
-      assert(status);
-      assert.deepEqual(
-        addedOrder,
-        orderToAdd,
-        `API should return the same order that was placed with status '${status}'`
-      );
-
-      const newOrdersInTheStore = await store.getInventory();
-      console.log(initialOrdersInTheStore);
-      console.log(newOrdersInTheStore);
-      assert.equal(
-        initialOrdersInTheStore[status]! + orderToAdd.quantity,
-        newOrdersInTheStore[status],
-        `Quantity of ${status} orders must increase after adding a new order`
-      );
-
-      await store.deleteOrder(orderToAdd.id);
-      const finalOrdersInTheStore = await store.getInventory();
-
-      assert.equal(
-        finalOrdersInTheStore[status],
-        initialOrdersInTheStore[status],
-        `Quantity of ${status} orders must be the same as it was initially after deleting the order`
-      );
-    } catch (error: any) {
-      assert.fail(`Test failed for status '${status}': ${error.message}`);
+    assert(status);
+    assert.deepEqual(
+      addedOrder,
+      orderToAdd,
+      `API should return the same order that was placed with status '${status}'`
+    );
+    async function wait(timeout: number) {
+      await new Promise((resolve) => setTimeout(resolve, timeout));
     }
+    await wait(400);
+    const newOrdersInTheStore = await store.getInventory();
+
+    assert.equal(
+      initialOrdersInTheStore[status]! + orderToAdd.quantity,
+      newOrdersInTheStore[status],
+      `Quantity of ${status} orders must increase after adding a new order`
+    );
+
+    await store.deleteOrder(orderToAdd.id);
+    const finalOrdersInTheStore = await store.getInventory();
+
+    assert.equal(
+      finalOrdersInTheStore[status],
+      initialOrdersInTheStore[status],
+      `Quantity of ${status} orders must be the same as it was initially after deleting the order`
+    );
   }
 
   function newOrderWithStatus(

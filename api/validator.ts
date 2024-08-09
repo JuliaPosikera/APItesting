@@ -1,15 +1,11 @@
-import SwaggerParser from "@apidevtools/swagger-parser";
 import Ajv from "ajv";
+import SwaggerParser from "@apidevtools/swagger-parser";
 
 export async function loadAPISpeck() {
-  console.log("loadAPISpeck");
   return SwaggerParser.dereference("http://localhost:8080/api/v3/openapi.json");
 }
 
 export function validate(schema: any, body: any) {
-  console.log(schema);
-  console.log(body);
-
   const ajv = new Ajv({
     strict: false,
     allErrors: true,
@@ -23,11 +19,14 @@ export function validate(schema: any, body: any) {
   });
   const validate = ajv.compile(schema);
   const valid = validate(body);
-  console.log(valid);
+
   if (!valid) {
     throw new Error(
-      `Schema validation error: ${JSON.stringify(
-        { validationErrors: validate.errors },
+      `Swagger validation errors: ${JSON.stringify(
+        {
+          body: body,
+          validationErrors: validate.errors,
+        },
         null,
         2
       )}`
