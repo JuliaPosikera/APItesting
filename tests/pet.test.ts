@@ -1,7 +1,6 @@
 import { strict as assert } from "assert";
 import { PetController as pet } from "../api/controller/pet.controller";
 import { components } from "./../temp/schema";
-import _ from "lodash";
 
 describe("User can ", () => {
   it("receive pet by id", async function () {
@@ -14,6 +13,8 @@ describe("User can ", () => {
       body?.id === 2,
       `Expected API to return pet with id=1, but got ${body.id}`
     );
+
+    // assert(body instanceof components["schemas"]["Pet"]);
   });
   it("receive pet by status", async function () {
     let body = await pet.getByStatus("available");

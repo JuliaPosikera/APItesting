@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
     "@types/got": "^9.6.12",
     "@types/mocha": "^10.0.7",
     "@types/node": "^22.1.0",
+    "ajv": "^8.17.1",
     "got": "^11.8.1",
     "mocha": "^10.7.0",
     "ts-node": "^10.9.2"

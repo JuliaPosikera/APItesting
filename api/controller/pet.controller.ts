@@ -1,16 +1,26 @@
 import { JsonRequest } from "./../request";
 import { components, operations } from "./../../temp/schema";
+import { loadAPISpeck, validate } from "../validator";
 
 export class PetController {
   static async getById(id: number | string) {
     try {
-      return (
+      const body = (
         await new JsonRequest()
           .url(`http://localhost:8080/api/v3/pet/${id}`)
           .send<
             operations["getPetById"]["responses"]["200"]["content"]["application/json"]
           >()
       ).body;
+      const apiSpeck = (await loadAPISpeck()) as any;
+
+      const schema =
+        apiSpeck.paths["/pet/{petId}"]["get"]["responses"]["200"]["content"][
+          "application/xml"
+        ];
+
+      validate(schema, { id: "Wrong ID", status: 122, name: "kkkkk" });
+      return body;
     } catch (error: any) {
       console.error(error?.message || "error by getting pets by id");
     }
